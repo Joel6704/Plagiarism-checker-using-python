@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% from 'fields.html' import controls %}
+{% block content %}
+<div class="heading-row">{{ heading(title) }}{% if new %}<a class="button" href="{{ new[1] }}">{{ new[0] }}</a>{% endif %}</div>
+{% if fields %}<details class="panel form-panel"><summary>{{ button }}</summary>{{ controls(fields, button) }}</details>{% endif %}
+{% if available is defined %}
+<details class="panel form-panel"><summary>Create a batch</summary>
+{% if available %}<form class="stack" method="post">{{ token() }}<label>Batch title<input name="title"></label><fieldset><legend>Select documents</legend>
+{% for doc in available %}<label class="check"><input type="checkbox" name="documents" value="{{ doc.id }}">{{ doc.title }} · {{ doc.status }}</label>{% endfor %}</fieldset><div><button class="button">Queue batch</button></div></form>
+{% else %}<p>Upload a document to create a batch.</p><a href="{{ url_for('pages.uploads') }}">Upload documents</a>{% endif %}
+</details>{% endif %}
+<section class="panel">
+<form class="filters" method="get"><label>Search<input name="q" type="search" value="{{ request.args.get('q','') }}"></label>
+{% for field in filters|default([]) %}<label>{{ 'Minimum similarity' if field == 'minimum' else field|title }}<input name="{{ field }}" type="{{ 'date' if field == 'date' else ('number' if field == 'minimum' else 'text') }}" value="{{ request.args.get(field,'') }}"></label>{% endfor %}
+<button class="button secondary">Filter</button>{% if request.args %}<a href="{{ request.path }}">Reset</a>{% endif %}</form>
+{% if rows %}<div class="table-scroll"><table><thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead><tbody>
+{% for row in rows %}<tr>{% for cell in row %}<td>{% if cell is sequence and cell is not string %}<a href="{{ cell[1] }}">{{ cell[0] }}</a>{% else %}{{ cell }}{% endif %}</td>{% endfor %}</tr>{% endfor %}
+</tbody></table></div>{% else %}<p class="empty">No records found.</p>{% endif %}
+{% include 'pagination.html' %}</section>{% endblock %}

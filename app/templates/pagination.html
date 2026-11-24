@@ -1,0 +1,3 @@
+{% if pagination.pages > 1 %}<nav class="pages" aria-label="Pagination">
+{% for page in pagination.iter_pages() %}{% if page %}<a href="?{% for key,val in request.args.items() if key != 'page' %}{{ key|urlencode }}={{ val|urlencode }}&amp;{% endfor %}page={{ page }}" {% if page == pagination.page %}aria-current="page"{% endif %}>{{ page }}</a>{% else %}<span>…</span>{% endif %}{% endfor %}
+</nav>{% endif %}

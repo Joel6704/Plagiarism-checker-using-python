@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+{{ heading(title, doc.filename ~ ' · Uploaded by ' ~ doc.owner.username ~ ' · ' ~ doc.created.date()) }}
+<section class="panel form-panel"><div class="actions"><span class="pill">{{ doc.status }}</span>{% if doc.content %}
+<form method="post">{{ token() }}<button class="button" name="action" value="check">Run similarity check</button></form>{% endif %}</div>
+{% if doc.error %}<p class="toast-message error">{{ doc.error }}</p>{% endif %}
+<form class="stack separate" method="post">{{ token() }}<label>Document title<input name="title" value="{{ doc.title }}" required maxlength="160"></label><label>Category<input name="category" value="{{ doc.category }}" maxlength="80"></label><div><button class="button secondary" name="action" value="rename">Save document details</button></div></form>
+<form class="separate" method="post" data-confirm="Delete the document? Existing analysis history will be retained.">{{ token() }}<button class="button danger" name="action" value="delete">Delete document</button></form></section>
+<section class="grid"><article class="panel"><h2>Analysis history</h2>{% for row in history %}<div class="entry"><a href="{{ url_for('pages.result',identifier=row.id) }}">Analysis #{{ row.id }}</a><span>{{ row.score }}% · {{ row.created.date() }}</span></div>{% else %}<p class="empty">No checks run.</p>{% endfor %}</article>
+{% if doc.content %}<article class="panel"><h2>Extracted text</h2><pre class="document-text">{{ doc.content.text }}</pre></article>{% endif %}</section>
+{% endblock %}

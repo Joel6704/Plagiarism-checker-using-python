@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+{{ heading(title, 'Configure local text similarity algorithms and test changes on sample passages.') }}
+<section class="panel form-panel"><form method="post" class="stack">{{ token() }}
+<fieldset><legend>Analysis methods</legend>
+{% set descriptions = {'tfidf':'Compares weighted word frequencies.', 'ngram':'Compares overlapping groups of consecutive words.', 'sentence':'Finds similar passages and estimates matching token coverage.', 'sequence':'Compares the order of tokens in both documents.'} %}
+{% for key,label in method_names.items() %}<label class="check"><input type="checkbox" name="methods" value="{{ key }}" {% if key in (request.form.getlist('methods') if request.method == 'POST' else row.methods) %}checked{% endif %}><span>{{ label }}<small>{{ descriptions[key] }}</small></span></label>{% endfor %}</fieldset>
+<div class="grid"><label>Sentence match threshold<input type="number" name="threshold" min=".1" max="1" step=".01" value="{{ request.form.get('threshold', row.threshold) }}" required></label>
+<label>N-gram size<input type="number" name="ngram_size" min="2" max="6" value="{{ request.form.get('ngram_size', row.ngram_size) }}" required></label></div>
+<div><button class="button" name="action" value="save">Save configuration</button></div>
+<fieldset class="separate stack"><legend>Test sample text</legend><label>Submitted text<textarea name="left" rows="3" maxlength="6000">{{ request.form.get('left','') }}</textarea></label>
+<label>Reference text<textarea name="right" rows="3" maxlength="6000">{{ request.form.get('right','') }}</textarea></label>
+<div><button class="button secondary" name="action" value="test">Compare methods</button></div></fieldset></form>
+{% if trials %}<h2 class="separate">Test results</h2>{% for name,score in trials %}<div class="entry">{{ name }} <strong>{{ score }}%</strong></div>{% endfor %}{% endif %}</section>
+<section class="panel"><h2>Configuration history</h2><div class="table-scroll"><table><thead><tr><th>Version</th><th>Changed by</th><th>Methods</th><th>Threshold</th><th>N-gram size</th><th>Date</th></tr></thead><tbody>
+{% for version in versions.items %}<tr><td>{{ version.id }}</td><td>{{ version.username }}</td><td>{{ version.snapshot.methods|join(', ') }}</td><td>{{ version.snapshot.threshold }}</td><td>{{ version.snapshot.ngram_size }}</td><td>{{ version.created.date() }}</td></tr>{% endfor %}
+</tbody></table></div>{% with pagination=versions %}{% include 'pagination.html' %}{% endwith %}</section>
+{% endblock %}

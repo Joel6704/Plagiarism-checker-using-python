@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+<div class="heading-row">{{ heading(title) }}<form method="post">{{ token() }}<button class="button secondary" name="action" value="mark-all">Mark all as read</button></form></div>
+<section class="panel">
+<form method="get" class="filters"><label>Search<input type="search" name="q" value="{{ request.args.get('q','') }}"></label><label>Category<input name="category" value="{{ request.args.get('category','') }}"></label><button class="button secondary">Filter</button></form>
+{% for notice in pagination.items %}
+<article class="entry"><div><h2>{{ notice.title }} {% if not notice.read %}<span class="pill">Unread</span>{% endif %}</h2><p>{{ notice.message }}</p><p class="muted">{{ notice.category }} · {{ notice.created.strftime('%Y-%m-%d %H:%M') }} UTC</p></div>
+<form method="post" class="actions">{{ token() }}<input type="hidden" name="id" value="{{ notice.id }}">
+{% if not notice.read %}<button class="button secondary" name="action" value="read">Mark as read</button>{% endif %}<button class="button danger" name="action" value="delete" data-confirm="Delete this notification?">Delete</button></form></article>
+{% else %}<p class="empty">No notifications found.</p>{% endfor %}
+{% include 'pagination.html' %}</section>
+{% endblock %}

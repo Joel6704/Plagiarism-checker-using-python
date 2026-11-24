@@ -1,0 +1,2 @@
+{% macro token() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+{% macro heading(title, note='') %}<div class="page-heading"><h1>{{ title }}</h1>{% if note %}<p>{{ note }}</p>{% endif %}</div>{% endmacro %}

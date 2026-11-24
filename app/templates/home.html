@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+<section class="hero"><div><div class="pill">Document similarity workspace</div><h1>Review document similarity with evidence.</h1><p>Compare submissions against imported references or a set of documents. Review matching passages, see their sources, and share a PDF report.</p><div class="actions">{% if current_user.is_authenticated %}<a class="button" href="{{ url_for('pages.dashboard') }}">Open dashboard</a>{% else %}<a class="button" href="{{ url_for('pages.register') }}">Create an account</a><a class="button secondary" href="{{ url_for('pages.signin') }}">Sign in</a>{% endif %}</div></div>
+<div class="hero-art" aria-hidden="true"><div class="art-sheet"><span></span><span></span><span></span><span></span><span></span></div><div class="art-sheet front"><span></span><span></span><span></span><span></span><span></span></div></div></section>
+<section class="grid three"><article class="panel"><h2>Import documents</h2><p>Upload text-based PDFs, Word documents, or UTF-8 text files.</p></article><article class="panel"><h2>Inspect matching passages</h2><p>See which phrases and sentences resemble material in the reference library.</p></article><article class="panel"><h2>Keep a review record</h2><p>Download individual and batch reports with the methods and sources used.</p></article></section>
+{% endblock %}

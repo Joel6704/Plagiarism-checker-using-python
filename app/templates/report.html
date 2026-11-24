@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+{{ heading(title, disclaimer) }}
+<div class="panel"><h2>{{ row.analysis.title }}</h2><p>Created {{ row.created.date() }} · Analysis #{{ row.analysis_id }} · {{ row.analysis.score }}% similarity</p>
+<div class="actions"><a class="button secondary" href="{{ url_for('pages.result',identifier=row.analysis_id) }}">View similarity findings</a><a class="button" href="{{ url_for('pages.report_pdf',identifier=row.id) }}">Download PDF</a>
+<form method="post" data-confirm="Delete this report record?">{{ token() }}<button class="button danger">Delete report</button></form></div></div>
+{% endblock %}

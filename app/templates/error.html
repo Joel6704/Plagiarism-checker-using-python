@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}{{ heading(title, explanation) }}<a class="button" href="{{ url_for('pages.home') }}">Return home</a>{% endblock %}

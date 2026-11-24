@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+{{ heading(title, 'Batch #' ~ job.id ~ ' · ' ~ job.status) }}
+<section class="metrics">{% for state,count in counts.items() %}<article class="panel metric"><span>{{ state }}</span><strong>{{ count }}</strong></article>{% endfor %}</section>
+<section class="panel">
+<div class="actions">
+{% if job.status in ['Pending','Processing'] %}
+<form method="post" id="advance">{{ token() }}<input type="hidden" name="action" value="advance"><button class="button">Process next document</button></form>
+<form method="post" data-confirm="Cancel this batch? Completed results will remain available.">{{ token() }}<button name="action" value="cancel" class="button danger">Cancel remaining items</button></form>
+{% endif %}
+{% if job.status in ['Failed','Partial'] and current_user.admin %}<form method="post">{{ token() }}<button class="button" name="action" value="retry">Retry failed documents</button></form>{% endif %}
+{% if analyses %}<a class="button secondary" href="{{ url_for('pages.batch_pdf',identifier=job.id) }}">Download batch report</a>{% endif %}
+</div>
+{% if job.status in ['Pending','Processing'] %}<p class="muted separate">Keep this page open to automatically process each queued document.</p>{% endif %}
+<div class="table-scroll"><table><thead><tr><th>Document</th><th>Status</th><th>Result</th></tr></thead><tbody>
+{% for item in job.items %}<tr><td>{{ item.title }}</td><td>{{ item.status }}</td><td>{% if item.id in analyses %}{% set row = analyses[item.id] %}<a href="{{ url_for('pages.result',identifier=row.id) }}">View check · {{ row.score }}%</a>{% else %}{{ item.error or '—' }}{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

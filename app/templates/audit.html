@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}{{ heading(title) }}
+<section class="panel"><dl>{% for label,val in [('Actor',row.username),('Actor ID',row.user_id),('Role',row.role),('Action',row.action),('Related object',row.related),('Description',row.description),('Timestamp',row.created),('Status',row.status),('IP address',row.ip)] %}<div class="entry"><dt>{{ label }}</dt><dd>{{ val or '—' }}</dd></div>{% endfor %}</dl></section>
+{% endblock %}

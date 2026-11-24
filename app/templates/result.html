@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}
+<div class="heading-row">{{ heading(title, 'Similarity analysis #' ~ analysis.id ~ ' · ' ~ analysis.created.date()) }}{% if analysis.report %}<a class="button" href="{{ url_for('pages.report_pdf',identifier=analysis.report.id) }}">Download PDF</a>{% endif %}</div>
+<section class="panel"><div class="score">{{ analysis.score }}%</div><p>Highest source score, calculated from the mean of the enabled similarity methods.</p><p class="muted">{{ disclaimer }}</p><div class="actions"><span class="pill">Completed</span><span>{{ analysis.methods.sources_checked }} references checked</span><span>{{ '%.3f'|format(analysis.seconds) }} s</span></div><p class="separate">{{ algorithms }} · Sentence threshold {{ analysis.methods.threshold }}</p></section>
+<section class="grid wide"><article class="panel"><h2>Submitted text</h2><pre class="document-text">{% for part,matched in parts %}{% if matched %}<mark>{{ part }}</mark>{% else %}{{ part }}{% endif %}{% endfor %}</pre></article>
+<article class="panel"><h2>Matched sources</h2>{% for source in sources %}<details class="source"><summary>{{ source.title }} · {{ source.score }}%</summary>
+{% for key,item in source.metadata_snapshot.items() if item and key != 'source_id' %}<div><strong>{{ key|title }}</strong> {{ item }}</div>{% endfor %}
+{% for segment in source.segments %}<div class="excerpt"><strong>{{ '%.1f'|format(segment.score) }}% sentence similarity</strong><p>{{ analysis.document_text[segment.start:segment.end] }}</p><blockquote>{{ segment.excerpt }}</blockquote></div>{% else %}<p class="muted">No passages cleared the sentence threshold.</p>{% endfor %}
+</details>{% else %}<p class="empty">No matching sources found.</p>{% endfor %}</article></section>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% from 'fields.html' import controls %}
+{% block content %}{{ heading(title, explanation|default('')) }}
+{% if fields %}<section class="panel form-panel">{{ controls(fields, button) }}
+{% if delete %}<form method="post" class="separate" data-confirm="Delete this source?">{{ token() }}<button class="button danger" name="action" value="delete">Delete source</button></form>{% endif %}
+</section>{% endif %}
+{% endblock %}

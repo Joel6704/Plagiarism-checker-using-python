@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% from "parts.html" import token, heading with context %}
+{% block content %}{{ heading(title, row.category ~ ' · ' ~ row.status ~ ' · ' ~ row.priority ~ ' priority') }}
+<section class="panel form-panel"><p class="muted">Submitted by {{ row.owner.username }} · {{ row.created.date() }}</p><p class="preserve">{{ row.message }}</p><h2>Support response</h2><p class="preserve">{{ row.response or 'Awaiting response.' }}</p>
+{% if current_user.admin %}<form method="post" class="stack separate">{{ token() }}
+<label>Status<select name="status">{% for item in states %}<option {% if row.status == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></label>
+<label>Priority<select name="priority">{% for item in priorities %}<option {% if row.priority == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></label>
+<label>Reply<textarea name="response" rows="4">{{ row.response }}</textarea></label><div><button class="button">Save response</button></div></form>{% endif %}
+</section>{% endblock %}

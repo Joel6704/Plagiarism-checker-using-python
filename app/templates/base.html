@@ -1,0 +1,39 @@
+{% from "parts.html" import token, heading with context %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>{{ title }} · Similarity Lab</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='site.css') }}">
+<script defer src="{{ url_for('static',filename='site.js') }}"></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{% if current_user.is_authenticated %}
+{% set dash = 'admin_dashboard' if current_user.admin else 'dashboard' %}
+<header class="top">
+<button type="button" id="toggle" class="quiet" aria-controls="sidebar" aria-expanded="true" aria-label="Toggle navigation">☰</button>
+<a class="brand" href="{{ url_for('pages.home') }}"><span class="symbol">≋</span> Similarity Lab</a>
+<form class="top-search" action="{{ url_for('pages.documents') }}"><input name="q" type="search" placeholder="Search documents" aria-label="Search documents"></form>
+<a class="quiet notice-link" href="{{ url_for('pages.notifications') }}">Notifications{% if unread %} <strong>{{ unread }}</strong>{% endif %}</a>
+<details class="account"><summary>{{ current_user.username }}</summary><div><a href="{{ url_for('pages.profile') }}">Profile</a><form action="{{ url_for('pages.signout') }}" method="post">{{ token() }}<button class="quiet">Sign out</button></form></div></details>
+</header>
+<aside id="sidebar">
+<div class="shell-label">{{ 'Administration' if current_user.admin else 'Workspace' }}</div>
+{% set nav = [(dash,'Dashboard','⌂'),('documents','Documents','▤'),('uploads','Upload documents','↑'),('batches','Batch checking','▦'),('history','Similarity history','◷'),('reports','Reports','▧'),('notifications','Notifications','◉'),('feedback','Feedback','✎'),('analytics','Analytics','▥')] %}
+{% if current_user.admin %}{% set nav = nav + [('users','Users','♙'),('sources','Source library','▤'),('announcements','Announcements','◉'),('audit_log','Audit log','≡'),('model_management','Model management','⚙'),('settings','Settings','◈')] %}{% endif %}
+<nav aria-label="Workspace">{% for route,label,icon in nav %}<a href="{{ url_for('pages.' ~ route) }}" {% if request.endpoint == 'pages.' ~ route %}aria-current="page"{% endif %}><span aria-hidden="true">{{ icon }}</span>{{ label }}</a>{% endfor %}</nav>
+<form action="{{ url_for('pages.signout') }}" method="post">{{ token() }}<button class="quiet logout">Sign out</button></form>
+</aside>
+{% else %}
+<header class="public-top"><a class="brand" href="{{ url_for('pages.home') }}"><span class="symbol">≋</span> Similarity Lab</a><nav><a href="{{ url_for('pages.signin') }}">Sign in</a><a class="button" href="{{ url_for('pages.register') }}">Create account</a></nav></header>
+{% endif %}
+<main id="main" class="{{ 'workspace' if current_user.is_authenticated else 'public' }}">
+{% for category,message in get_flashed_messages(with_categories=true) %}<div class="toast-message {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</div>{% endfor %}
+{% block content %}{% endblock %}
+</main>
+</body></html>

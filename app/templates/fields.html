@@ -1,0 +1,19 @@
+{% macro controls(fields, button) %}
+<form method="post" enctype="multipart/form-data" class="stack">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% for name,label,kind,data,required in fields %}
+{% if kind == 'checkbox' %}
+<label class="check"><input type="checkbox" name="{{ name }}" {% if data %}checked{% endif %}>{{ label }}</label>
+{% elif kind in ['file','multiple'] %}
+<label class="drop" data-drop>{{ label }}<input name="{{ name }}" type="file" accept=".pdf,.docx,.txt" {% if kind == 'multiple' %}multiple{% endif %} {% if required %}required{% endif %}><span>Drop files here or browse</span></label>
+{% else %}
+<label>{{ label }}
+{% if kind == 'textarea' %}<textarea name="{{ name }}" rows="4" {% if required %}required{% endif %}>{{ data }}</textarea>
+{% elif kind == 'select' %}<select name="{{ name }}" {% if required %}required{% endif %}>{% for item in data %}<option>{{ item }}</option>{% endfor %}</select>
+{% else %}<input type="{{ kind }}" name="{{ name }}" value="{{ data }}" {% if required %}required{% endif %}>{% endif %}
+</label>
+{% endif %}
+{% endfor %}
+<div><button class="button">{{ button }}</button></div>
+</form>
+{% endmacro %}
